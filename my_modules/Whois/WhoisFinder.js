@@ -1,6 +1,6 @@
 var whois=require('node-whois');
 var strparser = require('../../my_modules/StingParser/Parsers');
-
+var geoip = require('geoip-lite');
 /*
 Find ip's info through geoip through db delivered MaxMind
  */
@@ -9,8 +9,13 @@ var FindIpBase = function(ip){
 }
 
 /*
-
+function that looking for necessary info in GeoIp DB
  */
+
+var findInGeoIp=function(ip){
+    var res = geoip.lookup(ip);
+    return res;
+}
 
 /*
 function that find info about IP through whois
@@ -41,3 +46,4 @@ module.exports.FindIpWhois = FindIpWhois;
 module.exports.FindIpBase = FindIpBase;
 module.exports.FindIpWhoisRecursive = FindIpWhoisRecursive;
 module.exports.Parser = strparser;
+module.exports.findInGeoIp = findInGeoIp;

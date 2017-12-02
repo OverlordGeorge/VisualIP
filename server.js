@@ -2,8 +2,14 @@ var express=require('express');
 var app=express();
 var server=require('http').createServer(app);
 var io=require('socket.io').listen(server);
-var port=3000;
 var wh = require('./my_modules/Whois/WhoisFinder');
+
+/*
+ optional parametrs
+ */
+
+var port=3000;
+var timeDelta = 1000;
 
 server.listen(port,function(){
     console.log("server is running on port: ",port);
