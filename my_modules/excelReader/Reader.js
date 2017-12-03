@@ -1,40 +1,24 @@
 var fs = require('fs');
-var excel = require('excel');
-var xlsx = require('node-xlsx');
-
-var appendPropertie = function(name,value,obj){
-    obj[name]=value;
-}
+var xlsx = require('xlsx');
 
 ExcelReader.prototype.getStream = function(){
-   /* excel(this.name, function(err, data) {
-        if(err)
-            throw err;
-        else{
-            /*for (var i=1;i<data.length;i++)
-            {
-                var obj = [];
-                appendPropertie('ip',data[i][0],obj);
-                appendPropertie('length',parseInt(data[i][1]),obj);
-                appendPropertie('from',data[i][2],obj);
-                appendPropertie('to',data[i][3],obj);
-                appendPropertie('time',new Date(data[i][4]+" "+data[i][5]),obj);
-                appendPropertie('helo',data[i][6],obj);
-                appendPropertie('hostName',data[i][7],obj);
-                appendPropertie('type',data[i][8],obj);
-                console.log(obj);
-                this.objects.push(obj);
-                console.log(i);
-            }
-
-        }
-    });*/
-    var data = xlsx.parse(this.name);
-    //console.log(data[0].data);
-    console.log(data[0].data[2]);
-    //var xlsxDate = '42430.32226851852'
-    var unixTime=new Date(Math.round(data[0].data[2][5]/1157410)).getTime()/1000;
-    console.log(unixTime)
+    var workbook = xlsx.readFile(this.name);
+    var sheet_name_list = workbook.SheetNames;
+    var data = xlsx.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
+    for (var i=0;i<data.length/2;i++){
+        var obj={};
+        obj['ip'] = data[i].IP;
+        if (data[i].LENGTH)
+            obj['length'] = data[i].LENGTH;
+        obj['from']  = data[i].FROM;
+        obj['to'] = data[i].TO;
+        obj['time'] = new Date(data[i].DATE+" "+data[i].TIME).getTime()/1000;
+        obj['host'] = data[i].HOSTNAME;
+        obj['whymark'] = data[i].WHYMARK;
+        this.objects.push(obj);
+    }
+    this.startPos=0;
+    this.startTime=this.objects[0].time;
 };
 
 function ExcelReader(name){
@@ -61,20 +45,28 @@ ExcelReader.prototype.setStart = function(time){
 }
 
 
-
 ExcelReader.prototype.getPerTime=function(time){
     var i = this.startPos;
+    this.startTime = this.startTime + time;
+    var res = [];
     while (i<this.objects.length)
     {
-            //var currTime=new Date(this.objects[i].);
-
+        if (this.objects[i].time>this.startTime) break;
+        res.push(this.objects[i]);
+        i++
     }
+    this.startPos = i;
+    return res;
 };
 
-var a = new ExcelReader('../../data/spamtest.xlsx');
-var minutes = 5, the_interval = 2 * 1000;
+
+//test for 3 seconds
+/*
+var excel = new ExcelReader('../../data/spamtest.xlsx');
+var seconds = 5, the_interval = 2 * 1000;
 setInterval(function() {
-    console.log("I am doing my 5 minutes check");
-    // do your stuff here
+    var res = excel.getPerTime(seconds);
+    console.log(res);
 }, the_interval);
-//module.exports.readFromExcel = ExcelReader;
+*/
+module.exports.ExcelReader = ExcelReader;
