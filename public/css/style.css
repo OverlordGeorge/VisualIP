@@ -1,0 +1,30 @@
+#MainMap{
+    position: absolute;
+    width: 100%;
+    height: 80%;
+}
+
+.sourceThreat{
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+    background-color: indianred;
+    border:  3px solid lightcoral;
+    animation: sizePulsing 1s infinite;
+}
+
+@keyframes sizePulsing {
+    0%{
+        background-color: darkred;
+    }
+    50%{
+        background-color: red;
+        width: 30px;
+        height: 30px;
+        top: -5px;
+        left: -5px;
+    }
+    100%{
+        background-color: darkred;
+    }
+}

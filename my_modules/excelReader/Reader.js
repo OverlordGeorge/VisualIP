@@ -42,8 +42,12 @@ ExcelReader.prototype.setStart = function(time){
             this.startPos++;
         }
         return ips;
-}
+};
 
+ExcelReader.prototype.restartReading=function(){
+    this.startPos = 0;
+    this.startTime=this.objects[0].time;
+}
 
 ExcelReader.prototype.getPerTime=function(time){
     var i = this.startPos;
@@ -56,6 +60,9 @@ ExcelReader.prototype.getPerTime=function(time){
         i++
     }
     this.startPos = i;
+    if (i>this.objects.length) {
+        this.restartReading();
+    }
     return res;
 };
 

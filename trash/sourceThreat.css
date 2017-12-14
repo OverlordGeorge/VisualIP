@@ -1,0 +1,21 @@
+.sourceThreat{
+    width: 25px;
+    height: 25px;
+    border-radius: 100%;
+    background-color: indianred;
+    border:  3px solid lightcoral;
+    animation: sizePulsing 1s infinite;
+}
+
+@keyframes sizePulsing {
+    0%{
+        background-color: darkred;
+    }
+    50%{
+        background-color: red;
+        transform: scale(1.5);
+    }
+    100%{
+        background-color: darkred;
+    }
+}
