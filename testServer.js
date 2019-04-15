@@ -31,13 +31,16 @@ var Informer = require('./my_modules/Informer');
 
 
 MongoClient.connect(url, function(err, db) {
-    if (err) throw err;
-    var dbo = db.db("local");
+    if (err) {
+        console.log("cant connect to Mongo")
+        throw err;
+    }
+    var dbo = db.db("VisualIP");
     var ipanalyzer = new IpAnalyzer(dbo);
     var informer = new Informer(dbo);
     var currIps=[];
     var refreshInfo;
-    var sendPercents;
+    var sendPercents = function(){};
 
     app.use(express.static(__dirname +'/public'));
     app.use(express.static(__dirname +'/node_modules'));

@@ -1,5 +1,5 @@
 var fs = require('fs');
-var path = '../data/CountryBorders/countries.geojson';
+var path = './data/CountryBorders/countries.geojson';
 
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/local";
@@ -14,10 +14,13 @@ function findCountry(param, countries){
 
 MongoClient.connect(url, function(err, db) {
     if (err) throw err;
-    var dbo = db.db("local");
+    var dbo = db.db("VisualIP");
     console.log("connected to DB");
     dbo.collection("Countries").deleteMany();
-    fs.readFile('../data/countryFullInfo.json','utf8', function(err, coun) {
+    fs.readFile('./data/countryFullInfo.json','utf8', function(err, coun) {
+        if (err){
+            console.log("error with file");
+        }
         var countries = JSON.parse(coun);
         fs.readFile(path, 'utf8', function (err, data) {
             var res = JSON.parse(data);
