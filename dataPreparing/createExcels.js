@@ -1,6 +1,8 @@
 let xlsx = require('xlsx');
 let fs = require('fs');
 
+let fields = [];
+
 let sourceFile = './data/spamtest.xlsx';
 let nameMatrix = './dataPreparing/jsons/nameMatrix.json';
 let dataMatrix = './dataPreparing/jsons/dataMatrix.json';
@@ -59,19 +61,20 @@ function startCreating(excelData, nameMatrix) {
             name: name,
             num: i+1
         };
-        valuesArr.push([]);
-        valuesArr[i].push("K"+i);
-        if (nameMatrix[i].link) {
-            for (let j = 0; j < excelData.length; j++) {
-                let value = getValueFromExcel(nameMatrix[i], excelData[j]);
-                valuesArr[num].push(value);
-            }
-            num++;
-        }
         nameArr.push(obj);
     }
+
+    for (let j = 0; j < excelData.length; j++) {
+        let obj = {};
+        for (let i = 0; i < nameMatrix.length; i++) {
+            let name = nameMatrix[i].name;
+            let value = getValueFromExcel(nameMatrix[i], excelData[j]);
+            obj[name] = value;
+        }
+        valuesArr.push(obj);
+    }
     createNameMatrixExcel(nameArr);
-    // createDataMatrixExcel(valuesArr);
+    createDataMatrixExcel(valuesArr, nameArr);
 }
 
 function prepareNameMatrixForExcel(arr) {
@@ -86,23 +89,33 @@ function prepareNameMatrixForExcel(arr) {
 }
 
 function createNameMatrixExcel(arr) {
-    let prepArr = prepareNameMatrixForExcel(arr);
-    let ws = xlsx.utils.json_to_sheet(prepArr);
-    xlsx.utils.book_append_sheet(book,ws, "List One")
-    //var buf = XLSX.write(wb, {type:'buffer', bookType:bookType || "xlsx"});
+    let ws = xlsx.utils.json_to_sheet(arr, {header:["num", "name", "desc"]});
+    xlsx.utils.book_append_sheet(book,ws, "List One");
     let buf = xlsx.writeFile(book, outputNameMatrix);
     return buf;
 }
 
-function createDataMatrixExcel(arr) {
-    let wb = xlsx.utils.json_to_sheet(arr);
-    console.log(1);
+function createDataMatrixExcel(arr , nameMatrix) {
+    let nameArr = [];
+    for (let i=0;i<nameMatrix.length;i++){
+        let name = nameMatrix[i].name;
+        nameArr.push(name);
+    }
+    let ws = xlsx.utils.json_to_sheet(arr, {header: nameArr});
+    xlsx.utils.book_append_sheet(book,ws, "List Two");
+    let buf = xlsx.writeFile(book, outputNameMatrix);
+    return buf;
 }
-
 
 make();
 
-let arr1 = [1, 2, 3];
-/*let arr2 = [[1, 2, 3], ["a", "b", "c"]];
-let res1 = xlsx.utils.json_to_sheet(arr1);
-let res2 = xlsx.utils.json_to_sheet(arr2);*/
+/*function test() {
+    let ws = xlsx.utils.json_to_sheet([
+        { S:1, h:2, e:3, e_1:4, t:5, J:6, S_1:7 },
+        { S:2, h:3, e:4, e_1:5, t:6, J:7, S_1:8 }
+    ], {header:["S","h","e","e_1","t","J","S_1"]});
+    xlsx.utils.book_append_sheet(book,ws, "List One");
+    let buf = xlsx.writeFile(book, outputNameMatrix);
+}
+
+test();*/
