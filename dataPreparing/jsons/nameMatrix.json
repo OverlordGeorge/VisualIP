@@ -16,7 +16,7 @@
     "desc": "Why flaged as spam",
     "link": "WHYMARK",
     "scale": "",
-    "values": ["BadHELO","Marked by SpamAssassin","Blacklisted","Bad sender hostname","Manual"]
+    "values": ["BadHELO","Marked by SpamAssassin","Blacklisted","Bad sender hostname","Manual","Domain for sender"]
   },
   {
     "name": "From",

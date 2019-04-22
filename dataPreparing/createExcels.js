@@ -1,7 +1,7 @@
 let xlsx = require('xlsx');
 let fs = require('fs');
 
-let fields = [];
+let letter = "P";
 
 let sourceFile = './data/spamtest.xlsx';
 let nameMatrix = './dataPreparing/jsons/nameMatrix.json';
@@ -11,6 +11,9 @@ let outputNameMatrix = './dataPreparing/results/nameMatrix.xlsx';
 let outputDataMatrix = './dataPreparing/results/dataMatrix.xlsx';
 
 let book = xlsx.utils.book_new();
+
+let nameHeaders = ['num', 'meaning'];
+let valueHeaders = ['num'];
 
 function getDataFromExcel(file) {
     let workbook = xlsx.readFile(file);
@@ -53,13 +56,13 @@ function getValueFromExcel(column, elem) {
 function startCreating(excelData, nameMatrix) {
     let nameArr = [];
     let valuesArr = [];
-    let num = 0;
     for (let i = 0; i < nameMatrix.length; i++) {
         let name = nameMatrix[i].name;
         let obj = {
             desc: nameMatrix[i].desc,
             name: name,
-            num: i+1
+            num: i+1,
+            meaning: letter +(i+1)
         };
         nameArr.push(obj);
     }
@@ -71,6 +74,7 @@ function startCreating(excelData, nameMatrix) {
             let value = getValueFromExcel(nameMatrix[i], excelData[j]);
             obj[name] = value;
         }
+        obj['num'] = j+1;
         valuesArr.push(obj);
     }
     createNameMatrixExcel(nameArr);
@@ -89,7 +93,8 @@ function prepareNameMatrixForExcel(arr) {
 }
 
 function createNameMatrixExcel(arr) {
-    let ws = xlsx.utils.json_to_sheet(arr, {header:["num", "name", "desc"]});
+    let headers = nameHeaders.splice(["name","desc"]);
+    let ws = xlsx.utils.json_to_sheet(arr, {header:headers});
     xlsx.utils.book_append_sheet(book,ws, "List One");
     let buf = xlsx.writeFile(book, outputNameMatrix);
     return buf;
@@ -101,7 +106,8 @@ function createDataMatrixExcel(arr , nameMatrix) {
         let name = nameMatrix[i].name;
         nameArr.push(name);
     }
-    let ws = xlsx.utils.json_to_sheet(arr, {header: nameArr});
+    let headers = ['num'].splice(nameArr);
+    let ws = xlsx.utils.json_to_sheet(arr, {header:headers});
     xlsx.utils.book_append_sheet(book,ws, "List Two");
     let buf = xlsx.writeFile(book, outputNameMatrix);
     return buf;
