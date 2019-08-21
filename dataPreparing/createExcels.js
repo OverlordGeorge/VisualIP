@@ -2,13 +2,14 @@ let xlsx = require('xlsx');
 let fs = require('fs');
 
 let letter = "P";
-
-let sourceFile = './data/spamtest.xlsx';
+let dbo;
+let dbData = [];
+let sourceFile = './data/data70.xlsx';
 let nameMatrix = './dataPreparing/jsons/nameMatrix.json';
 let dataMatrix = './dataPreparing/jsons/dataMatrix.json';
 
-let outputNameMatrix = './dataPreparing/results/nameMatrix.xlsx';
-let outputDataMatrix = './dataPreparing/results/dataMatrix.xlsx';
+let outputNameMatrix = './dataPreparing/results/nameMatrix1.xlsx';
+let outputDataMatrix = './dataPreparing/results/dataMatrix1.xlsx';
 
 let book = xlsx.utils.book_new();
 
@@ -106,15 +107,51 @@ function createDataMatrixExcel(arr , nameMatrix) {
         let name = nameMatrix[i].name;
         nameArr.push(name);
     }
+    nameArr.push("count");
+    nameArr.push("country");
     let headers = ['num'].splice(nameArr);
+    arr = completeMatrix(arr);
     let ws = xlsx.utils.json_to_sheet(arr, {header:headers});
     xlsx.utils.book_append_sheet(book,ws, "List Two");
-    let buf = xlsx.writeFile(book, outputNameMatrix);
+   let buf = xlsx.writeFile(book, outputNameMatrix);
     return buf;
 }
 
-make();
+function completeMatrix(arr) {
+    for (let i=0;i<arr.length;i++){
+        for (let j=0;j<dbData.length;j++){
+            if (arr[i].IP == dbData[j].properties.ip){
+                arr[i]["count"] = dbData[j].properties.count;
+                let country = dbData[j].properties.country;
+                let code = country.charCodeAt(0) - 65;
+                arr[i]["country"] = code;
+            }
+        }
+    }
+    for (let i=0;i<arr.length;i++){
+        arr[i].IP = dbData[i].properties.ip;
+    }
+    return arr;
+}
 
+var url = "mongodb://127.0.0.1:27017/";
+var MongoClient = require('mongodb').MongoClient;
+
+MongoClient.connect(url, function(err, db) {
+    if (err) {
+        console.log("cant connect to Mongo")
+        throw err;
+    }
+    console.log("successfuly connected")
+   dbo = db.db("VisualIP");
+
+    dbo.collection("Ips").find({}).toArray(function (err, res) {
+        dbData = res;
+        make();
+    });
+
+
+});
 /*function test() {
     let ws = xlsx.utils.json_to_sheet([
         { S:1, h:2, e:3, e_1:4, t:5, J:6, S_1:7 },
