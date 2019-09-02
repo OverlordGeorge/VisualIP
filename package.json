@@ -11,6 +11,8 @@
     "ini": "^1.3.5",
     "js-rrd": "^1.1.0",
     "mongodb": "^3.0.4",
+    "nginx-log-parser": "0.0.4",
+    "nginxparser": "^2.1.0",
     "node-whois": "^2.1.3",
     "parse-whois": "^1.0.0",
     "request": "^2.85.0",
