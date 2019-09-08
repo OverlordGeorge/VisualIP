@@ -32,12 +32,15 @@ console.log(res);*/
 let SimpleReader = require('../../my_modules/excelReader/SimpleReader').SimpleReader;
 let DataConverter = require('../../my_modules/DataConverter/DataConverter').DataConverter;
 let LogParser = require('../../my_modules/LogParser/LogParser').LogParser;
+let DataPrepareModule = require('../../my_modules/DataPrepareModule/DataPrepareModule').DataPrepareModule;
 
 let excelClass = new SimpleReader();
 let dataConverter = new DataConverter();
 let nginxParser = new LogParser('$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"');
-
+let dataPrepareModule = new DataPrepareModule();
 
 nginxParser.parseAndPrepareLog(__dirname+'/data/access.txt', function (data) {
-    console.log(data);
+    //console.log(data);
+    let res = dataPrepareModule.prepareSeveralObjects(data);
+    console.log(res);
 });
