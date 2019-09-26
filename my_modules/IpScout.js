@@ -1,10 +1,22 @@
 let whois=require('node-whois');
 let geoip = require('geoip-lite');
 let WhoisParser = require('./WhoisParser');
+let fs = require('fs');
 
-module.exports = class IpScout{
+class IpScout{
     constructor(){
         this.whParser = new WhoisParser();
+        this.countriesObjects = JSON.parse(fs.readFileSync('./data/countryFullInfo.json', 'utf8'));
+    }
+
+    getCountryDecimalCode(alpha2){
+        let code = 0;
+        this.countriesObjects.forEach(function (elem) {
+            if (alpha2 === elem["alpha-2"]){
+                code = parseInt(elem["country-code"]);
+            }
+        });
+        return code;
     }
 
     getGeoIpInfo(ip){
@@ -12,6 +24,8 @@ module.exports = class IpScout{
         if (res) return res;
         else return false;
     }
+
+
 
     findIpByWhois(ip,refer,callback){
         var opt = {
@@ -36,3 +50,5 @@ module.exports = class IpScout{
         })
     }
 };
+
+module.exports.IpScout = IpScout;

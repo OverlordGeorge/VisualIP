@@ -30,7 +30,7 @@ class DataConverter {
     }
     
     utcToUnix(time){
-        if (this.checkIfValid(time)) {
+        if (!this.checkIfValid(time)) {
             return false
         }
         time = time.replace(':',' ');
@@ -51,10 +51,11 @@ class DataConverter {
     }
 
     logarithm(value){
-        if (this.checkIfValid(value)) {
+        if (!this.checkIfValid(value)) {
             return false
         }
         value = parseInt(value);
+        if (value===0) return 0;
         return Math.round(Math.log(value));
     }
 
