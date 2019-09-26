@@ -20,11 +20,35 @@ let nginxParser = new LogParser('$remote_addr - $remote_user [$time_local] "$req
 let dataPrepareModule = new DataPrepareModule();
 let synapticNetwork = new SynapticNetwork();
 
+function checkNetworkAnswers(checkArray) {
+    let diffRes = 0;
+    for (let i=0;i<checkArray.length;i++){
+        let preparedArr = [checkArray[i]['status'], checkArray[i]['body_bytes_sent'], checkArray[i]['country']];
+        let singleRes = synapticNetwork.calculateSingleObject(preparedArr);
+        let diff = Math.abs(Math.round(singleRes) - checkArray[i]['good']);
+        diffRes+=diff;
+    }
+    console.log("amount of test objects"+checkArray.length);
+    console.log("amount of mistakes"+diffRes);
+}
+
 function testNetwork() {
     //{"time_local":1567147073,"status":400,"body_bytes_sent":5,"ip":"41.251.86.130","country":504,"good":false}
-    let testData = [400, 5, 504];
-    let res = synapticNetwork.calculateSingleObject(testData);
-    console.log(res);
+    //let testData = [400, 5, 504];
+    //let res = synapticNetwork.calculateSingleObject(testData);
+    //console.log(res);
+    nginxParser.parseAndPrepareLog(__dirname+'/data/accessTactravels.txt', function (data) {
+        let parsedIpArray = dataPrepareModule.prepareSeveralObjects(data);
+        try {
+            let data = fs.readFileSync('./data/blackip.txt', 'utf8');
+            let str = data.toString();
+            let blacklistedIps = str.split('\n');
+            let markedIpArray = dataPrepareModule.findAllBlacklistedIPFrom(parsedIpArray, blacklistedIps);
+            checkNetworkAnswers(markedIpArray);
+        } catch(e) {
+            console.log('Error:', e.stack);
+        }
+    });
 }
 
 function trainNetwork(trainingSet){
