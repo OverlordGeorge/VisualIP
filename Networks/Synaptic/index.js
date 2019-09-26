@@ -28,8 +28,10 @@ function checkNetworkAnswers(checkArray) {
         let diff = Math.abs(Math.round(singleRes) - checkArray[i]['good']);
         diffRes+=diff;
     }
-    console.log("amount of test objects"+checkArray.length);
-    console.log("amount of mistakes"+diffRes);
+    console.log("amount of test objects "+checkArray.length);
+    console.log("amount of mistakes "+diffRes);
+    let percent = (diffRes/checkArray.length)*100;
+    console.log("percent of mistakes: "+percent+"%");
 }
 
 function testNetwork() {
