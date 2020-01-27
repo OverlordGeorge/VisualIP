@@ -15,10 +15,6 @@ server.listen(port,function(){
     console.log("server is running on port: ",port);
 });
 
-app.get("/test", function (req, res) {
-    res.send("test");
-});
-
 app.post("/saveLog", function (req, res) {
     console.log(req.body);
     res.status(200).send({"message": "Ok"});

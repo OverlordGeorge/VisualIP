@@ -1,28 +1,24 @@
 let Tail = require('tail').Tail;
 let http = require('http');
+let request = require('request');
 
 let path = "/var/log/nginx/access.log";
 let tail = new Tail(path);
-let logReceiverUrl = "http://89.105.140.135";
+let logReceiverUrl = "http://89.105.140.135:3000/saveLog";
 
 
-function sendData(data, url){
-    let jsonData = JSON.stringify(data);
-    let options = {
-      method: 'POST',
-        port: 3000,
-        headers:{
-            'Content-Type': 'application/json',
-            'Content-Length': jsonData.length
+function sendData(data) {
+    let opt = {
+        method: 'POST',
+        uri: logReceiverUrl,
+        json: true,
+        body: {
+            log: data
         }
     };
-    let req = http.request(url, options, function (response) {
-        console.log("code status: "+response.statusCode);
-    });
-    req.end();
+    request(opt);
 }
 
-tail.on("line", function(data) {
-    //console.log(data);
+tail.on("line", function (data) {
     sendData(data, logReceiverUrl);
 });

@@ -1,0 +1,12 @@
+{
+  "server": {
+    "port": 3000
+  },
+  "network": {
+    "trainingFile": "/data/logs/map/access.txt",
+    "checkFile": "/data/logs/tactravels/access.txt"
+  },
+  "mongo": {
+    "url": "mongodb://127.0.0.1:27017/"
+  }
+}
