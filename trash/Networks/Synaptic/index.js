@@ -54,6 +54,7 @@ function testNetwork() {
 }
 
 function trainNetwork(trainingSet){
+    console.log(trainingSet);
     let preaparedTrainingSet = dataPrepareModule.prepareForNetwork(trainingSet, ['status', 'body_bytes_sent', 'country'], ['good']);
     //console.log(preaparedTrainingSet);
     synapticNetwork.createAndPrepareNetwork(preaparedTrainingSet);

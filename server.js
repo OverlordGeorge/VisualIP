@@ -1,86 +1,100 @@
-var express=require('express');
-var app=express();
-var server=require('http').createServer(app);
-var io=require('socket.io').listen(server);
-var fs = require('fs');
-var ini = require('ini');
+//libraries
+let express = require('express');
+let MongoClient = require('mongodb').MongoClient;
+let app = express();
+let server = require('http').createServer(app);
+let io = require('socket.io').listen(server);
+let bodyParser = require('body-parser');
 
-var config = ini.parse(fs.readFileSync('./config.ini', 'utf-8'));
+//config file
+let config = require('./config.json');
 
-/*
-Initializing section
- */
+//my modules
+let NetworkHandler = require('./my_modules/NetworkHandler/NetworkHandler').NetworkHandler;
+let DataPrepareModule = require('./my_modules/DataPrepareModule/DataPrepareModule').DataPrepareModule;
 
-var port=8081;
-var timeDelta = config['excel'].step;
-var askDelta = config['options'].askDelay;
-
-///
-
-app.get('/', function(req, res) {
-    res.send('hello world');
+//my network
+let networkHandler = new NetworkHandler();
+let dataPrepareModule = new DataPrepareModule();
+networkHandler.createNetworkFromLog(__dirname + config.network.trainingFile, () => {
+    console.log("done training");
+    networkHandler.checkNetwork(__dirname + '/data/logs/tactravels/access.txt');
 });
 
-app.post('/', function(req, res) {
-    res.send('hello world');
-});
-
-
-server.listen(port,function(){
-    console.log("server is running on port: ",port);
-});
-
-//app.use(express.static(__dirname +'/public'));
-//app.use(express.static(__dirname +'/node_modules'));
-
-var ip = '89.105.140.135';
-var refer = 'whois.iana.org';
-var time =0;
-
-
-/*setInterval(function() {
-    var res = excel.getPerTime(seconds);
-    if (res) {
-        var objects =[];
-        if (res.length != 0) {
-            for (var i = 0; i < res.length; i++) {
-                var info = whois.FindIpBase(res[i].ip);
-                res[i].ll=[info.ll[0],info.ll[1]];
-                res[i].country = info.country;
-                res[i].city = info.city;
-                analyzier.eatIp(res[i],time);
-                objects.push(res[i]);
-            }
-            time+=seconds;
-           // io.to(socket.id).emit('getIpStack', objects);
-        }
+function setDest(req) {
+    if (req.connection.remoteAddress) {
+        let ip = dataPrepareModule.clearIp(req.connection.remoteAddress);
+        let ipInfo = dataPrepareModule.IpInfoScout.getGeoIpInfo(ip);
+        ipInfo['ip'] = ip;
+        return ipInfo;
+    } else {
+        return false;
     }
-}, the_interval);*/
+}
 
+app.use("/node_modules", express.static(__dirname + "/node_modules/"));
+app.use("/", express.static(__dirname + "/public/"));
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
-io.sockets.on('connection',function(socket) {
-
-    console.log('user connected, id: ',socket.id);
-
-    socket.on('greetings',function(){
-        io.to(socket.id).emit('test',"welcome to server");
-    });
-
-   /* socket.on('countryInfo',function(data){
-        console.log(data);
-        console.log(analyzier.getCountryInfo(data));
-        io.to(socket.id).emit('getCountryInfo', analyzier.getCountryInfo(data));
-    });
-
-
-    setInterval(function() {
-            var objects = analyzier.getLast();
-            io.to(socket.id).emit('getIpStack', objects);
-    }, the_interval);*/
-
+server.listen(config.server.port, function () {
+    console.log("server is running on port: " + config.server.port);
 });
 
+MongoClient.connect(config.mongo.url, function (err, db) {
+    if (err) {
+        console.log("cant connect to Mongo");
+        throw err;
+    } else {
+        console.log("connected to db");
+    }
+
+    io.sockets.on('connection', function (socket) {
+
+        console.log('user connected, id: ', socket.id);
+        io.to(socket.id).emit('sayHi', "welcome to server");
+
+        socket.on('networkInfo', function () {
+            let data = networkHandler.networkAnalyzer.getFullInfo();
+            io.to(socket.id).emit('getNetworkInfo', JSON.stringify(data));
+        });
+
+        app.post("/saveLog", function (req, res) {
+            if (req.body.data) {
+                networkHandler.getIpInfo(req.body.data, (source) => {
+                    let dest = setDest(req);
+                    let fullInfo = {
+                        "source": source,
+                        "dest": dest
+                    };
+                    networkHandler.networkAnalyzer.eatNetworkObject(source, dest);
+                    io.sockets.emit("getNewSignals", JSON.stringify(fullInfo));
+                })
+            }
+            res.status(200).send({"message": "Ok"});
+        });
+
+        app.get("/saveLog", function (req, res) {
+            res.status(200).send({"message": "Ok"});
+        });
+
+        /*socket.on('countryInfo',function(name){
+            informer.countryInfo(name,function(data){
+                if (data){
+                    io.to(socket.id).emit('getCountryInfo', JSON.stringify(data));
+                }
+            })
+        });
+
+        sendPercents = function(data){
+            io.to(socket.id).emit('getCountryPercents', JSON.stringify(data));
+        };
+
+        refreshInfo = function(){
+            io.to(socket.id).emit('getIpStack', currIps);
+        }*/
+    });
 
 
-
+});
 

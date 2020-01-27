@@ -53,6 +53,7 @@ class DataPrepareModule{
     getGeoInfoAbout(IpObject){
         let geoData = this.IpInfoScout.getGeoIpInfo(IpObject.ip);
         IpObject['country'] = this.IpInfoScout.getCountryDecimalCode(geoData['country']);
+        IpObject['coordinates'] = geoData['ll'];
         return IpObject;
     }
 
@@ -86,6 +87,10 @@ class DataPrepareModule{
             res.push(trainObject);
         });
         return res;
+    }
+
+    clearIp(unparsedIp){
+        return unparsedIp.replace(/[^0-9.]/g, '');
     }
 }
 

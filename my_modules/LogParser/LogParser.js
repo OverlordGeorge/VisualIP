@@ -58,6 +58,13 @@ class LogParser {
         })
     }
 
+
+    parseLine(line, callback) {
+        this.parser.parseLine(line, (parsedLine) =>{
+            let finishObj = this.filterNulls(parsedLine);
+            callback(finishObj);
+        })
+    };
 }
 
 module.exports.LogParser = LogParser;

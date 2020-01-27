@@ -16,16 +16,65 @@
     text-align: center;
 }
 
+#logo{
+    max-width: 20%;
+    position: absolute;
+    left: 5%;
+    bottom: 5%;
+    z-index: 900;
+}
+
+#logo_name{
+    font-family: 'Roboto Slab', serif;
+}
+
+#logo_author{
+    font-family: 'Caveat', cursive;
+}
+
 .sourceThreat{
     width: 20px;
     height: 20px;
     border-radius: 100%;
     background-color: indianred;
     border:  3px solid lightcoral;
+    animation: sizePulsingThreat 1s infinite;
+}
+
+.source{
+    width: 25px;
+    height: 25px;
+    border-radius: 100%;
+    background-color: #4acd14;
+    border:  3px solid #5ff031;
     animation: sizePulsing 1s infinite;
 }
 
+.destination{
+    width: 25px;
+    height: 25px;
+    border-radius: 100%;
+    background-color: #f0d341;
+    border:  3px solid #f0d341;
+}
+
 @keyframes sizePulsing {
+    0%{
+        background-color: green;
+    }
+    50%{
+        background-color: greenyellow;
+        width: 30px;
+        height: 30px;
+        top: -5px;
+        left: -5px;
+    }
+    100%{
+        background-color: green;
+    }
+}
+
+@keyframes sizePulsingThreat {
     0%{
         background-color: darkred;
     }
