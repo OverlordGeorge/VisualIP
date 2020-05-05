@@ -23,7 +23,7 @@ var askDelta = config['options'].askDelay;
 ///
 
 
-var MongoHandler = require('./my_modules/MongoHandler');
+var MongoHandler = require('./my_modules/MongoHandler/MongoHandler');
 var url = "mongodb://127.0.0.1:27017/";
 var MongoClient = require('mongodb').MongoClient;
 var IpAnalyzer = require('./my_modules/IpAnalyzer');

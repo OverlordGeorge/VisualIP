@@ -3,7 +3,7 @@
     @param MongoClient db
  */
 
-module.exports = class MongoHandler{
+class MongoHandler{
     constructor(db){
         this.db = db;
     }
@@ -29,3 +29,6 @@ module.exports = class MongoHandler{
         });
     };
 };
+
+module.exports.MongoHandler = MongoHandler;
+

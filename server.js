@@ -12,25 +12,17 @@ let config = require('./config.json');
 //my modules
 let NetworkHandler = require('./my_modules/NetworkHandler/NetworkHandler').NetworkHandler;
 let DataPrepareModule = require('./my_modules/DataPrepareModule/DataPrepareModule').DataPrepareModule;
+let DataLogReceiver = require('./my_modules/DataLogReceiver/DataLogReceiver').DataLogReceiver;
+let MongoHandler = require('./my_modules/MongoHandler/MongoHandler').MongoHandler;
 
 //my network
 let networkHandler = new NetworkHandler();
 let dataPrepareModule = new DataPrepareModule();
+
 networkHandler.createNetworkFromLog(__dirname + config.network.trainingFile, () => {
     console.log("done training");
     networkHandler.checkNetwork(__dirname + '/data/logs/tactravels/access.txt');
 });
-
-function setDest(req) {
-    if (req.connection.remoteAddress) {
-        let ip = dataPrepareModule.clearIp(req.connection.remoteAddress);
-        let ipInfo = dataPrepareModule.IpInfoScout.getGeoIpInfo(ip);
-        ipInfo['ip'] = ip;
-        return ipInfo;
-    } else {
-        return false;
-    }
-}
 
 app.use("/node_modules", express.static(__dirname + "/node_modules/"));
 app.use("/", express.static(__dirname + "/public/"));
@@ -41,7 +33,12 @@ server.listen(config.server.port, function () {
     console.log("server is running on port: " + config.server.port);
 });
 
-MongoClient.connect(config.mongo.url, function (err, db) {
+MongoClient.connect(config.mongo.url, function (err, connection) {
+
+    let db = connection.db(config.mongo.db);
+    let mongoHandler = new MongoHandler(db);
+    let dataLogReceiver = new DataLogReceiver(dataPrepareModule, networkHandler, mongoHandler);
+
     if (err) {
         console.log("cant connect to Mongo");
         throw err;
@@ -60,7 +57,7 @@ MongoClient.connect(config.mongo.url, function (err, db) {
         });
 
         app.post("/saveLog", function (req, res) {
-            if (req.body.data) {
+            /*if (req.body.data) {
                 networkHandler.getIpInfo(req.body.data, (source) => {
                     let dest = setDest(req);
                     let fullInfo = {
@@ -68,6 +65,11 @@ MongoClient.connect(config.mongo.url, function (err, db) {
                         "dest": dest
                     };
                     networkHandler.networkAnalyzer.eatNetworkObject(source, dest);
+                    io.sockets.emit("getNewSignals", JSON.stringify(fullInfo));
+                })
+            }*/
+            if (req.body.data) {
+                dataLogReceiver.saveLog(req, (fullInfo) => {
                     io.sockets.emit("getNewSignals", JSON.stringify(fullInfo));
                 })
             }

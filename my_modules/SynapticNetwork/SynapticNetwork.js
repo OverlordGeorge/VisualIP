@@ -43,7 +43,6 @@ class SynapticNetwork{
         return this.network.activate(data);
     }
 
-
 }
 
 module.exports.SynapticNetwork = SynapticNetwork;

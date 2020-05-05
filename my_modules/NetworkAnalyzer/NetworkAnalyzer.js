@@ -12,10 +12,10 @@ class NetworkAnalyzer {
         let diff = Math.abs(source['networkAns'] - source['blackListAns']);
         if (diff === 0){
             this.addSuccess();
-            this.addToLod(source,dest,1);
+            this.addToLog(source,dest,1);
         } else {
             this.addMistake();
-            this.addToLod(source,dest,0);
+            this.addToLog(source,dest,0);
         }
      }
     }
@@ -27,7 +27,7 @@ class NetworkAnalyzer {
         };
     }
 
-    addToLod(source, dest, type){
+    addToLog(source, dest, type){
         let obj = {};
         obj['source'] = source['ip'];
         obj['dest'] = dest['ip'];

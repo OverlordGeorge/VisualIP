@@ -1,5 +1,5 @@
 let IpScout = require('./IpScout');
-let MongoHandler = require('./MongoHandler');
+let MongoHandler = require('./MongoHandler/MongoHandler');
 
 module.exports = class IpAnalyzer{
 
