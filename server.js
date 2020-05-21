@@ -14,6 +14,7 @@ let NetworkHandler = require('./my_modules/NetworkHandler/NetworkHandler').Netwo
 let DataPrepareModule = require('./my_modules/DataPrepareModule/DataPrepareModule').DataPrepareModule;
 let DataLogReceiver = require('./my_modules/DataLogReceiver/DataLogReceiver').DataLogReceiver;
 let MongoHandler = require('./my_modules/MongoHandler/MongoHandler').MongoHandler;
+let IpInformer = require('./my_modules/IpInformer/IpInformer').IpInformer;
 
 //my network
 let networkHandler = new NetworkHandler();
@@ -36,8 +37,11 @@ server.listen(config.server.port, function () {
 MongoClient.connect(config.mongo.url, function (err, connection) {
 
     let db = connection.db(config.mongo.db);
+    let ipsColl = db.collection("Ips");
+
     let mongoHandler = new MongoHandler(db);
     let dataLogReceiver = new DataLogReceiver(dataPrepareModule, networkHandler, mongoHandler);
+    let ipInformer = new IpInformer(ipsColl);
 
     if (err) {
         console.log("cant connect to Mongo");
@@ -56,18 +60,15 @@ MongoClient.connect(config.mongo.url, function (err, connection) {
             io.to(socket.id).emit('getNetworkInfo', JSON.stringify(data));
         });
 
-        app.post("/saveLog", function (req, res) {
-            /*if (req.body.data) {
-                networkHandler.getIpInfo(req.body.data, (source) => {
-                    let dest = setDest(req);
-                    let fullInfo = {
-                        "source": source,
-                        "dest": dest
-                    };
-                    networkHandler.networkAnalyzer.eatNetworkObject(source, dest);
-                    io.sockets.emit("getNewSignals", JSON.stringify(fullInfo));
+        socket.on('getIpInfo', function (ip) {
+            if (ip && ip !== ""){
+                ipInformer.getFullIpInfo(ip, (data) => {
+                    io.to(socket.id).emit('ipInfo', JSON.stringify(data));
                 })
-            }*/
+            }
+        })
+
+        app.post("/saveLog", function (req, res) {
             if (req.body.data) {
                 dataLogReceiver.saveLog(req, (fullInfo) => {
                     io.sockets.emit("getNewSignals", JSON.stringify(fullInfo));
@@ -80,21 +81,6 @@ MongoClient.connect(config.mongo.url, function (err, connection) {
             res.status(200).send({"message": "Ok"});
         });
 
-        /*socket.on('countryInfo',function(name){
-            informer.countryInfo(name,function(data){
-                if (data){
-                    io.to(socket.id).emit('getCountryInfo', JSON.stringify(data));
-                }
-            })
-        });
-
-        sendPercents = function(data){
-            io.to(socket.id).emit('getCountryPercents', JSON.stringify(data));
-        };
-
-        refreshInfo = function(){
-            io.to(socket.id).emit('getIpStack', currIps);
-        }*/
     });
 
 

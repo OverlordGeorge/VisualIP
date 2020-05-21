@@ -6,7 +6,7 @@ let fs = require('fs');
 class IpScout{
     constructor(){
         this.whParser = new WhoisParser();
-        this.countriesObjects = JSON.parse(fs.readFileSync('./data/countryFullInfo.json', 'utf8'));
+        this.countriesObjects = JSON.parse(fs.readFileSync(__dirname+'/../data/countryFullInfo.json', 'utf8'));
     }
 
     getCountryDecimalCode(alpha2){
@@ -24,8 +24,6 @@ class IpScout{
         if (res) return res;
         else return false;
     }
-
-
 
     findIpByWhois(ip,refer,callback){
         var opt = {

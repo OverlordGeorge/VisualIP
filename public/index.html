@@ -38,7 +38,7 @@
                 </div>
                 <ul class="list-group list-group-flush" style="max-height: 14rem; overflow-y: auto">
                     <li class="list-group-item" ng-repeat="line in networkInfo.log">
-                        From {{line.source}} to {{line.dest}} -
+                        From <a href="#" ng-click="findIpInfo(line.source)">{{line.source}}</a> to <a href="#" ng-click="findIpInfo(line.dest)">{{line.dest}}</a> -
                         <span style="color: red" ng-if="line.type == 0">Threat</span>
                         <span style="color: green" ng-if="line.type == 1">Normal</span>
                     </li>
@@ -71,6 +71,7 @@
 <script src="app/lib/Source.js"></script>
 <script src="app/lib/Path.js"></script>
 <script src="app/lib/Destination.js"></script>
+<script src="app/lib/Ip.js"></script>
 
 
 <script src="app/app.js"></script>

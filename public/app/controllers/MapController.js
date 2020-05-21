@@ -105,60 +105,11 @@ app.controller("MapController", function ($scope, socket, $http, $window) {
          }
      });*/
 
-    $scope.getBotnet = function () {
-        for (var i = 0; i < ips.length; i++) {
-            delete ips[i];
-        }
-        let size = 0;
-        for (let i = 0; i < allIps.length; i++)
-            if (allIps[i].properties.count > 10)
-                size++;
-        ips.length = size;
-        for (let i = 0; i < size; i++) {
-            let obj = new Botnet(allIps[i]);
-            ips[i] = obj;
-        }
-        watchCountry = true;
-        //$scope.$digest();
-    };
-
-    socket.on('getCountryPercents', function (data) {
-        let res = JSON.parse(data)
-        for (let i = 0; i < layers.length; i++) {
-            let num = findLayer(res, "alpha-3", layers[i].feature.id);
-            if (num !== false && res[i].properties) {
-                let color = setColor(res[num].properties.percent);
-                layers[i].setStyle({
-                    color: color,
-                    fillColor: color,
-                    opacity: 0.2,
-                    fillOpacity: 0.2
-                });
-                layers[i].bringToFront();
-            }
-        }
-    });
-
-    socket.on('getCountryInfo', function (data) {
-        $scope.shCountry = true;
-        let result = JSON.parse(data);
-        //console.log(result);
-        allIps = [];
-        $scope.countryIps = [];
-        $scope.countryInfo = result.country.properties;
-        //ips = [];
-        for (let i = 0; i < result.ips.length; i++) {
-            allIps.push(result.ips[i]);
-        }
-        allIps.sort(compareIps);
-        for (let i = 0; i < 3; i++) {
-            if (allIps[i])
-                if (allIps[i].properties.count > 50) {
-                    $scope.countryIps.push(allIps[i]);
-                }
-        }
-        $scope.download();
-        $scope.countryInfo = result.country;
+    socket.on('ipInfo',function (data) {
+        let parsedData = JSON.parse(data);
+        console.log(parsedData);
+        let ip = new Ip(parsedData);
+        ips['ip'] = ip;
     })
 
     $http.get('../../infoData/country_codes.json').then(function (data) {
@@ -201,12 +152,15 @@ app.controller("MapController", function ($scope, socket, $http, $window) {
         };
     });
 
+    $scope.findIpInfo = function(ip){
+        socket.emit('getIpInfo', ip);
+    }
+
     $scope.download = function () {
         let botnet = [];
         for (let i = 0; i < allIps.length; i++)
             if (allIps[i].properties.count > 50)
                 botnet.push(allIps[i]);
-        //console.log(botnet);
         $scope.refreshFile(allIps[0].properties.country, botnet);
     };
 

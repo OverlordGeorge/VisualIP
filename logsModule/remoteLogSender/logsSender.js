@@ -4,7 +4,7 @@ let request = require('request');
 
 let path = "/var/log/nginx/access.log";
 let tail = new Tail(path);
-let logReceiverUrl = "http://89.105.140.135:3000/saveLog";
+let logReceiverUrl = "http://134.209.205.172:3000/saveLog";
 
 
 function sendData(data) {

@@ -1,6 +1,10 @@
 let IpScout = require('./IpScout');
 let MongoHandler = require('./MongoHandler/MongoHandler');
 
+/*
+TODO remove this class and move all stuff to IpInformer
+ */
+
 module.exports = class Informer{
 
     constructor(db){
