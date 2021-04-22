@@ -20,7 +20,7 @@
     "node-whois": "^2.1.3",
     "parse-whois": "^1.0.0",
     "request": "^2.85.0",
-    "socket.io": "^2.0.3",
+    "socket.io": "^2.4.0",
     "synaptic": "^1.1.4",
     "traceroute-lite": "^0.1.0",
     "ui-leaflet": "^1.0.3",
