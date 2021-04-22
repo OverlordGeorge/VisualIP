@@ -1,0 +1,16 @@
+{
+  "robots": [
+    "Googlebot",
+    "Googlebot-Image",
+    "Bingbot",
+    "Slurp",
+    "Baiduspider",
+    "DuckDuckBot",
+    "bot.html",
+    "AdsBot",
+    "Mediapartners-Google",
+    "YandexBot",
+    "Exabot",
+    "facebot"
+  ]
+}

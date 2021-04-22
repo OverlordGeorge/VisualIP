@@ -1,7 +1,7 @@
 var countries;
 var countries_bounds;
 
-app.controller("MapController", function ($scope, socket, $http, $window) {
+app.controller("MapController", function ($scope, socket, $http, $window, httpService) {
 
     let markerLifetime = 8000;
     let networkInfoRefreshTime = 5000;
@@ -9,8 +9,6 @@ app.controller("MapController", function ($scope, socket, $http, $window) {
     let ips = {};
     let paths = {};
 
-    $scope.countryInfo = '';
-    $scope.countryInfo;
     $scope.networkInfo = {
         log: [],
         percent: 1
@@ -18,7 +16,6 @@ app.controller("MapController", function ($scope, socket, $http, $window) {
     let countryPopup;
     $scope.countryIps = [];
     $scope.shCountry = false;
-    let allIps = [];
     let watchCountry = false;
     let layers = [];
 
@@ -127,8 +124,10 @@ app.controller("MapController", function ($scope, socket, $http, $window) {
             },
             onEachFeature: function (feature, layer) {
                 layer.bindPopup(feature.id, {}).on('popupopen', function () {
-                    let code = feature.id;
-                    socket.emit('countryInfo', code);
+                    //$scope.setCountryInfo(feature.id);
+                    $scope.$broadcast('newCountry', feature.id);
+                    //$rootScope.country = feature.id;
+                    //socket.emit('countryInfo', code);
                 });
                 layer.on('mouseover', function () {
                     layer.setStyle({

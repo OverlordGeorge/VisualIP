@@ -18,7 +18,7 @@ let IpInformer = require('./my_modules/IpInformer/IpInformer').IpInformer;
 
 //my network
 let networkHandler = new NetworkHandler();
-let dataPrepareModule = new DataPrepareModule();
+let dataPrepareModule = new DataPrepareModule(['time_local', 'status', 'body_bytes_sent', 'http_user_agent']);
 
 networkHandler.createNetworkFromLog(__dirname + config.network.trainingFile, () => {
     console.log("done training");
@@ -49,6 +49,17 @@ MongoClient.connect(config.mongo.url, function (err, connection) {
     } else {
         console.log("connected to db");
     }
+
+    app.get('/getCountryInfo', (request, response) => {
+        let code = request.query.name;
+        if (code){
+            mongoHandler.getCountryInfo(code, (obj)=>{
+                response.status(200).send(JSON.stringify(obj));
+            })
+        } else{
+            response.status(503).send("Country required")
+        }
+    })
 
     io.sockets.on('connection', function (socket) {
 

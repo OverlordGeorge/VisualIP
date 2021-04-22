@@ -18,7 +18,7 @@ class SynapticNetwork{
     }
 
     createNetwork(){
-        this.network = new Architect.Perceptron(2, 2, 1);
+        this.network = new Architect.Perceptron(4, 4, 1);
         this.trainer = new Trainer(this.network);
     }
 
@@ -28,15 +28,6 @@ class SynapticNetwork{
 
     trainNetwork(trainingSet){
         this.trainer.train(trainingSet);
-    }
-
-    calculateMultipleObjects(dataArr){
-        let res = [];
-        dataArr.forEach(elem =>{
-            let singleObject = this.calculateSingleObject(elem);
-            res.push(singleObject);
-        });
-        return res;
     }
 
     calculateSingleObject(data){

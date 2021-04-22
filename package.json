@@ -3,10 +3,12 @@
   "version": "0.0.1",
   "dependencies": {
     "angular": "^1.7.9",
+    "angular-chart": "^0.5.0",
     "animate.css": "^3.5.2",
     "async": "^2.5.0",
     "body-parser": "^1.18.2",
     "bootstrap": "^4.4.1",
+    "chart.js": "^3.1.1",
     "express": "^4.15.4",
     "geoip-lite": "^1.2.1",
     "http": "0.0.0",
@@ -22,6 +24,8 @@
     "synaptic": "^1.1.4",
     "traceroute-lite": "^0.1.0",
     "ui-leaflet": "^1.0.3",
-    "xlsx": "^0.11.11"
+    "xlsx": "^0.11.11",
+    "zingchart": "^2.9.3",
+    "zingchart-angularjs": "^1.2.0"
   }
 }

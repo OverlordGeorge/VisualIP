@@ -10,6 +10,8 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="/node_modules/angular/angular.min.js"></script>
+    <script src="node_modules/zingchart/zingchart.min.js"></script>
+    <script src="node_modules/zingchart-angularjs/src/zingchart-angularjs.js"></script>
     <script src="/node_modules/angular-simple-logger/dist/angular-simple-logger.min.js"></script>
     <script src="//unpkg.com/leaflet@0.7.7/dist/leaflet.js"></script>
     <script src="/node_modules/ui-leaflet/dist/ui-leaflet.js"></script>
@@ -19,7 +21,6 @@
     <script src="https://raw.githubusercontent.com/eligrey/Blob.js/master/Blob.js"></script>
     <script src="app/UsefulFunctions.js"></script>
 
-
     <link href="css/style.css" rel="stylesheet">
 
 
@@ -27,44 +28,67 @@
 
 <body ng-controller="MapController">
 
-        <leaflet center="center" id="MainMap" geojson="geojson" markers="markers" paths="paths" defaults="defaults">
-        </leaflet>
+<leaflet center="center" id="MainMap" geojson="geojson" markers="markers" paths="paths" defaults="defaults">
+</leaflet>
 
-        <div id="countryInfo">
-            <div class="card" style="width: 18rem;">
-                <div class="card-body">
-                    <h5 class="card-title">Network information</h5>
-                    <p class="card-text">Success percent: {{networkInfo.percent}} %</p>
-                </div>
-                <ul class="list-group list-group-flush" style="max-height: 14rem; overflow-y: auto">
-                    <li class="list-group-item" ng-repeat="line in networkInfo.log">
-                        From <a href="#" ng-click="findIpInfo(line.source)">{{line.source}}</a> to <a href="#" ng-click="findIpInfo(line.dest)">{{line.dest}}</a> -
-                        <span style="color: red" ng-if="line.type == 0">Threat</span>
-                        <span style="color: green" ng-if="line.type == 1">Normal</span>
-                    </li>
-                </ul>
-                <div class="card-body">
+<div id="countryInfo">
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">Network information</h5>
+            <p class="card-text">Success percent: {{networkInfo.percent}} %</p>
+        </div>
+        <ul class="list-group list-group-flush" style="max-height: 14rem; overflow-y: auto">
+            <li class="list-group-item" ng-repeat="line in networkInfo.log">
+                From <a href="#" ng-click="findIpInfo(line.source)">{{line.source}}</a> to <a href="#"
+                                                                                              ng-click="findIpInfo(line.dest)">{{line.dest}}</a>
+                -
+                <span style="color: red" ng-if="line.type == 0">Threat</span>
+                <span style="color: green" ng-if="line.type == 1">Normal</span>
+            </li>
+        </ul>
+        <div class="card-body">
+        </div>
+    </div>
+</div>
+
+<div id="logo">
+    <div class="row w-100">
+        <div class="row w-100">
+            <div class="col-12" id="logo_name">
+                <h1 class="mb-0">VisualIP</h1>
+            </div>
+        </div>
+        <div class="row w-100">
+            <div class="col-1"></div>
+            <div class="col-10 p-0" id="logo_author">
+                Created by Surikhin G.
+            </div>
+            <div class="col-1"></div>
+        </div>
+    </div>
+</div>
+
+<div ng-controller="CountryController">
+    <div ng-if="countryInfo" class="countryInfo animate__animated animate__fadeInLeft">
+        <div class="container">
+            <div class="row" ng-if="botsStats">
+                <div zingchart id="chart-1" zc-json="botsStats" zc-width="100%" zc-height="300px"></div>
+            </div>
+            <div class="row">
+                <div zingchart id="chart-2" zc-json="infectedStats" zc-width="100%" zc-height="300px"></div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <p>country: {{countryInfo['alpha-2']}}</p>
+                    <p>total: {{countryStatistics.total}}</p>
+                    <p>infected: {{countryStatistics.infected}}</p>
+                    <p>bots: {{countryStatistics.bots}}</p>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div id="logo">
-            <div class="row w-100">
-                <div class="row w-100">
-                    <div class="col-12" id="logo_name">
-                        <h1 class="mb-0">VisualIP</h1>
-                    </div>
-                </div>
-                <div class="row w-100">
-                    <div class="col-1"></div>
-                    <div class="col-10 p-0" id="logo_author">
-                        Created by Surikhin G.
-                    </div>
-                    <div class="col-1"></div>
-                </div>
-            </div>
-        </div>
-
+</div>
 </body>
 
 <script src="app/lib/Marker.js"></script>
@@ -76,5 +100,7 @@
 
 <script src="app/app.js"></script>
 <script src="app/service/services.js"></script>
+<script src="app/service/httpService.js"></script>
 <script src="app/controllers/MapController.js"></script>
+<script src="app/controllers/CountryController.js"></script>
 </html>

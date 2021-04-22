@@ -1,11 +1,13 @@
 let DataConverter = require('../DataConverter/DataConverter').DataConverter;
 let IpScout = require('../IpScout').IpScout;
+let UserAgentAnalyzer = require('../UserAgentAnalyzer/UserAgentAnalyzer').UserAgentAnalyzer;
 
 class DataPrepareModule{
-    constructor(fields = ['time_local', 'status', 'body_bytes_sent']){
+    constructor(fields = ['time_local', 'status', 'body_bytes_sent', 'http_user_agent']){
         this.dataConverter = new DataConverter();
         this.existedField = fields;
         this.IpInfoScout = new IpScout();
+        this.userAgentAnalyzer = new UserAgentAnalyzer();
     }
 
     prepareSeveralObjects(arrayOfObjs){
@@ -20,8 +22,7 @@ class DataPrepareModule{
 
     prepareSingleObject(obj){
         let filteredIpObject = this.convertExistedFields(obj);
-        let fullfieldIpObject = this.getAdditionalIpInfo(filteredIpObject);
-        return fullfieldIpObject;
+        return this.getAdditionalIpInfo(filteredIpObject);
     }
 
 
@@ -30,6 +31,7 @@ class DataPrepareModule{
         let time = this.existedField[0];
         let status = this.existedField[1];
         let bodyB = this.existedField[2];
+        let userAgent = this.existedField[3];
         if (obj[time]){
             newObj[time] = this.dataConverter.utcToUnix(obj[time]);
         }
@@ -38,6 +40,11 @@ class DataPrepareModule{
         }
         if (obj[bodyB]){
             newObj[bodyB] = this.dataConverter.logarithm(obj[bodyB]);
+        }
+        if (obj[userAgent]){
+            newObj[userAgent] = this.userAgentAnalyzer.isRobotUserAgent(obj[userAgent]) ? 1 : 0;
+        } else{
+            newObj[userAgent] = 0;
         }
         if (obj['ip_str']){
             newObj['ip'] = obj['ip_str'];

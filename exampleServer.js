@@ -21,7 +21,7 @@ setInterval(function() {
         var data = JSON.stringify(res);
         console.log(data);
         request({
-            uri: "http://localhost:8081/harvest",
+            uri: "http://localhost:3000/harvest",
             method: "POST",
             form: {
                 data: data

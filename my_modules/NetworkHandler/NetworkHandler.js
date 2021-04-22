@@ -20,6 +20,7 @@ class NetworkHandler {
         arr.push(obj['status']);
         arr.push(obj['body_bytes_sent']);
         arr.push(obj['country']);
+        arr.push(obj['http_user_agent']);
         return arr;
     }
 
@@ -27,7 +28,7 @@ class NetworkHandler {
         this.nginxParser.parseLine(line, (obj) => {
             let newObjInfo = this.dataPrepareModule.prepareSingleObject(obj);
             newObjInfo['blackListAns'] = this.getBlackIpListAnswer(obj);
-            newObjInfo['networkAns'] = this.getSingleNetworkAnswer(this.prepareObjectForNetwork(obj));
+            newObjInfo['networkAns'] = this.getSingleNetworkAnswer(this.prepareObjectForNetwork(newObjInfo));
             callback(newObjInfo);
         })
     }
@@ -38,7 +39,7 @@ class NetworkHandler {
     }
 
     getSingleNetworkAnswer(obj) {
-        return  Math.round(this.network.calculateSingleObject(obj[0]));
+        return Math.round(this.network.calculateSingleObject(obj)[0]);
     }
 
     createNetworkFromLog(path, callback) {
@@ -51,7 +52,7 @@ class NetworkHandler {
     }
 
     createAndTrainNetwork(trainingSet) {
-        let preparedTrainingSet = this.dataPrepareModule.prepareForNetwork(trainingSet, ['status', 'body_bytes_sent', 'country'], ['good']);
+        let preparedTrainingSet = this.dataPrepareModule.prepareForNetwork(trainingSet, ['status', 'body_bytes_sent', 'country', 'http_user_agent'], ['good']);
         this.network.createAndPrepareNetwork(preparedTrainingSet);
     }
 
@@ -82,9 +83,9 @@ class NetworkHandler {
                 let checkArray = this.dataPrepareModule.findAllBlacklistedIPFrom(parsedIpArray, blacklistedIps);
                 let diffRes = 0;
                 for (let i = 0; i < checkArray.length; i++) {
-                    let preparedArr = [checkArray[i]['status'], checkArray[i]['body_bytes_sent'], checkArray[i]['country']];
+                    let preparedArr = [checkArray[i]['status'], checkArray[i]['body_bytes_sent'], checkArray[i]['country'], checkArray[i]['http_user_agent']];
                     let singleRes = this.network.calculateSingleObject(preparedArr);
-                    let diff = Math.abs(Math.round(singleRes) - checkArray[i]['good']);
+                    let diff = Math.abs(Math.round(singleRes[0]) - checkArray[i]['good']);
                     diffRes += diff;
                 }
                 this.networkAnalyzer = new NetworkAnalyzer(diffRes, checkArray.length);

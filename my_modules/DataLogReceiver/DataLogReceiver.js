@@ -11,7 +11,13 @@ class DataLogReceiver{
         if (req.connection.remoteAddress) {
             let ip = this.dataPrepareModule.clearIp(req.connection.remoteAddress);
             let ipInfo = this.dataPrepareModule.IpInfoScout.getGeoIpInfo(ip);
-            ipInfo['ip'] = ip;
+            if (ipInfo !== false) {
+                ipInfo['ip'] = ip;
+            } else{
+                ipInfo = {
+                    'ip': ip
+                }
+            }
             console.log("received log form: "+ip);
             return ipInfo;
         } else {

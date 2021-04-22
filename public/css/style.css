@@ -101,3 +101,16 @@
 .ip{
     cursor: pointer;
 }
+
+.countryInfo{
+    position: absolute;
+    z-index: 950;
+    right: 0;
+    top: 0;
+    width: 25vw;
+    height: 100%;
+    margin-right: 0;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0,0,0,.125);
+}
