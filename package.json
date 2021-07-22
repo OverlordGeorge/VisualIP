@@ -24,7 +24,7 @@
     "synaptic": "^1.1.4",
     "traceroute-lite": "^0.1.0",
     "ui-leaflet": "^1.0.3",
-    "xlsx": "^0.11.11",
+    "xlsx": "^0.17.0",
     "zingchart": "^2.9.3",
     "zingchart-angularjs": "^1.2.0"
   }
