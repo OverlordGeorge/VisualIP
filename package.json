@@ -5,7 +5,7 @@
     "angular": "^1.7.9",
     "angular-chart": "^0.5.0",
     "animate.css": "^3.5.2",
-    "async": "^2.5.0",
+    "async": "^2.6.4",
     "body-parser": "^1.18.2",
     "bootstrap": "^4.4.1",
     "chart.js": "^3.1.1",
